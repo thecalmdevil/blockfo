@@ -3,63 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Token Creation and Deployment</title>
+    <title>Media to Local Blockchain</title>
     <style>
-        /* Inline CSS for simplicity */
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f5f5f5;
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #fff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        h1 {
-            text-align: center;
-        }
-        form {
-            text-align: center;
-        }
-        label {
-            font-weight: bold;
-        }
-        input[type="text"],
-        input[type="number"],
-        button {
-            margin: 10px 0;
-            padding: 5px;
-            width: 100%;
-        }
-        #deployment-result {
-            display: none;
-        }
+        /* Minimalist design styles (same as previous) */
+        /* ... */
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Create and Deploy Tokens</h1>
-        <form id="token-form">
-            <label for="name">Token Name:</label><br>
-            <input type="text" id="name" required><br>
-            <label for="symbol">Token Symbol:</label><br>
-            <input type="text" id="symbol" required><br>
-            <label for="initialSupply">Initial Supply:</label><br>
-            <input type="number" id="initialSupply" required><br>
-            <button type="button" id="create-token">Create Token</button>
+        <h1>Media to Local Blockchain</h1>
+        <form id="upload-form">
+            <label for="media">Upload Media</label>
+            <input type="file" id="media" accept="image/*,video/*" required>
         </form>
-        <div id="deployment-result">
-            <h2>Contract Deployment Result</h2>
-            <p>Contract Address: <span id="contract-address"></span></p>
-            <p>Transaction Hash: <span id="transaction-hash"></span></p>
-        </div>
+        <p id="sha256_id"></p>
+        <h2>Local Blockchain Ledger</h2>
+        <ul id="ledger"></ul>
     </div>
     <script>
-        // JavaScript code (explained below)
+        const mediaInput = document.getElementById('media');
+        const sha256Id = document.getElementById('sha256_id');
+        const ledger = document.getElementById('ledger');
+
+        // Load existing blockchain ledger from local storage
+        let blockchain = JSON.parse(localStorage.getItem('blockchain')) || [];
+
+        document.getElementById('upload-form').addEventListener('change', async (e) => {
+            const file = mediaInput.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = async () => {
+                    const buffer = reader.result;
+                    const hashArray = await crypto.subtle.digest('SHA-256', buffer);
+                    const hashHex = Array.from(new Uint8Array(hashArray))
+                        .map(byte => byte.toString(16).padStart(2, '0'))
+                        .join('');
+
+                    // Add media information to the blockchain ledger
+                    const mediaInfo = {
+                        filename: file.name,
+                        type: file.type,
+                        hash: hashHex,
+                        timestamp: new Date().toLocaleString(),
+                    };
+                    blockchain.push(mediaInfo);
+
+                    // Save blockchain ledger to local storage
+                    localStorage.setItem('blockchain', JSON.stringify(blockchain));
+
+                    // Update the ledger display
+                    updateLedger();
+
+                    sha256Id.textContent = `SHA-256 ID: ${hashHex}`;
+                };
+                reader.readAsArrayBuffer(file);
+            } else {
+                sha256Id.textContent = '';
+            }
+        });
+
+        function updateLedger() {
+            ledger.innerHTML = '';
+            blockchain.forEach((entry, index) => {
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `
+                    <strong>Block ${index + 1}:</strong><br>
+                    Filename: ${entry.filename}<br>
+                    Type: ${entry.type}<br>
+                    SHA-256: ${entry.hash}<br>
+                    Timestamp: ${entry.timestamp}
+                `;
+                ledger.appendChild(listItem);
+            });
+        }
+        
+        // Initial update of the ledger
+        updateLedger();
     </script>
 </body>
 </html>
