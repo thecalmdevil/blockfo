@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo to SHA-256 ID Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            text-align: center;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 300px;
+        }
+        h1 {
+            margin: 0 0 20px;
+            color: #333;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        label {
+            cursor: pointer;
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+        label:hover {
+            background-color: #0056b3;
+        }
+        p {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Photo to SHA-256 ID Converter</h1>
+        <form id="upload-form" enctype="multipart/form-data">
+            <label for="photo">Choose Photo</label>
+            <input type="file" id="photo" accept="image/*" required>
+        </form>
+        <p id="sha256_id"></p>
+    </div>
+    <script>
+        const form = document.getElementById('upload-form');
+        const photoInput = document.getElementById('photo');
+        const sha256Id = document.getElementById('sha256_id');
+
+        form.addEventListener('change', async (e) => {
+            const file = photoInput.files[0];
+            if (file) {
+                const buffer = await file.arrayBuffer();
+                const hashArray = await crypto.subtle.digest('SHA-256', buffer);
+                const hashHex = Array.from(new Uint8Array(hashArray))
+                    .map(byte => byte.toString(16).padStart(2, '0'))
+                    .join('');
+                sha256Id.textContent = `SHA-256 ID: ${hashHex}`;
+            } else {
+                sha256Id.textContent = '';
+            }
+        });
+    </script>
+</body>
+</html>
