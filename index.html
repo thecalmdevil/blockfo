@@ -1,168 +1,328 @@
-<!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Media to Local Blockchain</title>
     <style>
-      /* Reset some default styles */
-      body,
-      h1,
-      h2,
-      p,
-      ul,
-      li {
-        margin: 0;
-        padding: 0;
-      }
+        /* Reset some default styles */
+        body, h1, h2, p, ul, li {
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            text-align: center;
+        }
 
-      body {
-        font-family: Arial, sans-serif;
-        background-color: #f5f5f5;
-        color: #333;
-        text-align: center;
-      }
+        /* Header styles */
+        header {
+            background-color: #3498db;
+            color: #fff;
+            padding: 20px 0;
+        }
+        header h1 {
+            font-size: 36px;
+        }
 
-      /* Header styles */
-      header {
-        background-color: #3498db;
-        color: #fff;
-        padding: 20px 0;
-      }
+        /* Container styles */
+        .container {
+            padding: 20px;
+            background: linear-gradient(135deg, #f0f0f0, #dcdcdc);
+            border-radius: 10px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .container:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+        }
 
-      header h1 {
-        font-size: 36px;
-      }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 10px;
+        }
 
-      /* Container styles */
-      .container {
-        padding: 20px;
-        background-color: #fff;
-        border-radius: 10px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        transition: transform 0.3s;
-      }
+        /* Custom styling for the file input button */
+        .file-input-container {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+        .file-input-button {
+            background-color: #3498db;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .file-input-button:hover {
+            background-color: #2980b9;
+        }
+        .file-input {
+            font-size: 100px;
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
 
-      /* Custom animation for the container */
-      .container:hover {
-        transform: scale(1.05);
-      }
+        p#sha256_id {
+            font-weight: bold;
+            margin-top: 10px;
+            font-size: 18px;
+        }
 
-      label {
-        font-weight: bold;
-        display: block;
-        margin-bottom: 10px;
-      }
+        /* Ledger styles */
+        h2 {
+            font-size: 24px;
+            margin-top: 20px;
+        }
+        ul#ledger {
+            list-style-type: none;
+            margin-top: 10px;
+        }
+        ul#ledger li:nth-child(odd) {
+            background-color: #f5f5f5;
+        }
+        ul#ledger li:nth-child(even) {
+            background-color: #eaeaea;
+        }
+        ul#ledger li {
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+        ul#ledger li:hover {
+            transform: scale(1.02);
+        }
 
-      input[type="file"] {
-        border: 2px solid #3498db;
-        border-radius: 5px;
-        padding: 10px;
-        width: 100%;
-        margin-bottom: 10px;
-        font-size: 16px;
-      }
+        /* Tab navigation styles */
+        .tab {
+            display: none;
+        }
+        .active-tab {
+            display: block;
+        }
+        ul#tab-nav {
+            list-style-type: none;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        ul#tab-nav li {
+            margin-right: 20px;
+        }
+        ul#tab-nav li:last-child {
+            margin-right: 0;
+        }
+        ul#tab-nav a {
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+            border: 2px solid #3498db;
+            padding: 5px 15px;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        ul#tab-nav a:hover {
+            background-color: #3498db;
+            color: #fff;
+        }
 
-      p#sha256_id {
-        font-weight: bold;
-        margin-top: 10px;
-        font-size: 18px;
-      }
-
-      /* Ledger styles */
-      h2 {
-        font-size: 24px;
-        margin-top: 20px;
-      }
-
-      ul#ledger {
-        list-style-type: none;
-        margin-top: 10px;
-      }
-
-      ul#ledger li {
-        background-color: #f5f5f5;
-        border-radius: 5px;
-        padding: 20px;
-        margin-bottom: 20px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        transition: transform 0.3s;
-      }
-
-      /* Custom animation for ledger items */
-      ul#ledger li:hover {
-        transform: scale(1.02);
-      }
+        /* Blockchain Explorer Tab */
+        .explorer-tab {
+            background-color: #34495e;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        #search-input {
+            padding: 10px;
+            border: 2px solid #e74c3c;
+            border-radius: 5px;
+            width: 70%;
+            margin-right: 10px;
+            color: #333;
+        }
+        #search-button {
+            background-color: #e74c3c;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #search-button:hover {
+            background-color: #c0392b;
+        }
+        ul#explorer-results {
+            list-style-type: none;
+            margin-top: 20px;
+        }
+        ul#explorer-results li {
+            background-color: #eaeaea;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+        ul#explorer-results li:hover {
+            transform: scale(1.02);
+        }
     </style>
-  </head>
-  <body>
-    <header>
-      <h1>Media to Local Blockchain</h1>
+</head>
+<body>
+<header>
+        <h1>Media to Local Blockchain</h1>
     </header>
     <div class="container">
-      <form id="upload-form">
-        <label for="media">Upload Media</label>
-        <input type="file" id="media" accept="image/*,video/*" required>
-      </form>
-      <p id="sha256_id"></p>
-      <h2>Local Blockchain Ledger</h2>
-      <ul id="ledger"></ul>
-    </div>
-    <script>
-      const mediaInput = document.getElementById('media');
-      const sha256Id = document.getElementById('sha256_id');
-      const ledger = document.getElementById('ledger');
-      // Load existing blockchain ledger from local storage
-      let blockchain = JSON.parse(localStorage.getItem('blockchain')) || [];
-      document.getElementById('upload-form').addEventListener('change', async (e) => {
-        const file = mediaInput.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = async () => {
-            const buffer = reader.result;
-            const hashArray = await crypto.subtle.digest('SHA-256', buffer);
-            const hashHex = Array.from(new Uint8Array(hashArray)).map(byte => byte.toString(16).padStart(2, '0')).join('');
-            // Add media information to the blockchain ledger
-            const mediaInfo = {
-              filename: file.name,
-              type: file.type,
-              hash: hashHex,
-              timestamp: new Date().toLocaleString(),
-            };
-            blockchain.push(mediaInfo);
-            // Save blockchain ledger to local storage
-            localStorage.setItem('blockchain', JSON.stringify(blockchain));
-            // Update the ledger display
-            updateLedger();
-            sha256Id.textContent = `SHA-256 ID: ${hashHex}`;
-          };
-          reader.readAsArrayBuffer(file);
-        } else {
-          sha256Id.textContent = '';
-        }
-      });
+        <!-- Tab navigation -->
+        <ul id="tab-nav">
+            <li><a href="#upload-tab">Upload Media</a></li>
+            <li><a href="#explorer-tab">Blockchain Explorer</a></li>
+        </ul>
 
-      function updateLedger() {
-        ledger.innerHTML = '';
-        blockchain.forEach((entry, index) => {
-          const listItem = document.createElement('li');
-          listItem.innerHTML = `
-                    
-						<strong>Block ${index + 1}:</strong>
-						<br>
-                    Filename: ${entry.filename}
-							<br>
-                    Type: ${entry.type}
-								<br>
-                    SHA-256: ${entry.hash}
-									<br>
-                    Timestamp: ${entry.timestamp}
-                `;
-          ledger.appendChild(listItem);
+        <!-- Upload Media Tab -->
+        <div class="tab active-tab" id="upload-tab">
+            <form id="upload-form">
+                <label for="media">Upload Media</label>
+                <div class="file-input-container">
+                    <label for="media" class="file-input-button">Select File</label>
+                    <input type="file" id="media" accept="image/*,video/*" required class="file-input">
+                </div>
+            </form>
+            <p id="sha256_id"></p>
+            <h2>Local Blockchain Ledger</h2>
+            <ul id="ledger"></ul>
+        </div>
+
+        <!-- Blockchain Explorer Tab -->
+        <div class="tab explorer-tab" id="explorer-tab">
+            <h2>Blockchain Explorer</h2>
+            <input type="text" id="search-input" placeholder="Search by SHA-256 ID">
+            <button id="search-button">Search</button>
+            <ul id="explorer-results"></ul>
+        </div>
+    </div>
+
+    <script>
+        // MediaBlockchain Library
+        const MediaBlockchain = {
+            blockchain: [],
+            init: function () {
+                // Load existing blockchain ledger from local storage
+                this.blockchain = JSON.parse(localStorage.getItem('blockchain')) || [];
+
+                // Add event listener for file upload
+                const mediaInput = document.getElementById('media');
+                mediaInput.addEventListener('change', this.handleMediaUpload.bind(this));
+            },
+            handleMediaUpload: async function (event) {
+                const file = event.target.files[0];
+                if (file) {
+                    try {
+                        const hashHex = await this.calculateSHA256(file);
+
+                        // Add media information to the blockchain ledger
+                        const mediaInfo = {
+                            filename: file.name,
+                            type: file.type,
+                            hash: hashHex,
+                            timestamp: new Date().toLocaleString(),
+                        };
+                        this.blockchain.push(mediaInfo);
+
+                        // Save blockchain ledger to local storage
+                        localStorage.setItem('blockchain', JSON.stringify(this.blockchain));
+
+                        // Update the ledger display
+                        this.updateLedger();
+
+                        // Display SHA-256 ID
+                        this.displaySHA256ID(hashHex);
+                    } catch (error) {
+                        console.error('Error calculating SHA-256:', error);
+                    }
+                }
+            },
+            calculateSHA256: async function (file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = async function () {
+                        const buffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(reader.result));
+                        const hashArray = Array.from(new Uint8Array(buffer));
+                        const hashHex = hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
+                        resolve(hashHex);
+                    };
+                    reader.onerror = reject;
+                    reader.readAsArrayBuffer(file);
+                });
+            },
+            updateLedger: function () {
+                // Update the ledger display
+                const ledger = document.getElementById('ledger');
+                ledger.innerHTML = '';
+                this.blockchain.forEach((entry, index) => {
+                    const listItem = document.createElement('li');
+                    listItem.innerHTML = `
+                        <strong>Block ${index + 1}:</strong><br>
+                        Filename: ${entry.filename}<br>
+                        Type: ${entry.type}<br>
+                        SHA-256: ${entry.hash}<br>
+                        Timestamp: ${entry.timestamp}
+                    `;
+                    ledger.appendChild(listItem);
+                });
+            },
+            displaySHA256ID: function (hashHex) {
+                // Display SHA-256 ID
+                const sha256Id = document.getElementById('sha256_id');
+                sha256Id.textContent = `SHA-256 ID: ${hashHex}`;
+            },
+        };
+
+        // ExplorerLibrary
+        const ExplorerLibrary = {
+            init: function () {
+                // Initialize the Blockchain Explorer
+                // (Implementation for Blockchain Explorer functionality)
+            },
+            // Add other methods for Blockchain Explorer functionality...
+        };
+
+        // Initialize the libraries
+        MediaBlockchain.init();
+        ExplorerLibrary.init();
+
+        // Handle tab switching
+        const tabs = document.querySelectorAll('#tab-nav a');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Toggle active tab class
+                tabs.forEach(t => t.classList.remove('active-tab'));
+                tab.classList.add('active-tab');
+
+                // Toggle tab content
+                const tabId = tab.getAttribute('href').substring(1);
+                const tabContent = document.getElementById(tabId);
+                const allTabs = document.querySelectorAll('.tab');
+                allTabs.forEach(t => t.style.display = 'none');
+                tabContent.style.display = 'block';
+            });
         });
-      }
-      // Initial update of the ledger
-      updateLedger();
     </script>
-  </body>
+</body>
 </html>
