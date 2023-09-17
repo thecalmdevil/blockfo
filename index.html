@@ -293,12 +293,45 @@
                 sha256Id.textContent = `SHA-256 ID: ${hashHex}`;
             },
         };
-
-        // ExplorerLibrary
-        const ExplorerLibrary = {
+  // ExplorerLibrary
+  const ExplorerLibrary = {
             init: function () {
                 // Initialize the Blockchain Explorer
-                // (Implementation for Blockchain Explorer functionality)
+                this.bindSearchButton();
+            },
+            bindSearchButton: function () {
+                const searchButton = document.getElementById('search-button');
+                searchButton.addEventListener('click', this.handleSearch.bind(this));
+            },
+            handleSearch: function () {
+                const searchInput = document.getElementById('search-input');
+                const searchTerm = searchInput.value;
+                
+                // Find media with the same SHA-256 hash
+                const results = MediaBlockchain.blockchain.filter(entry => entry.hash === searchTerm);
+
+                this.displaySearchResults(results);
+            },
+            displaySearchResults: function (results) {
+                const explorerResults = document.getElementById('explorer-results');
+                explorerResults.innerHTML = '';
+
+                if (results.length === 0) {
+                    explorerResults.innerHTML = '<p>No results found.</p>';
+                    return;
+                }
+
+                results.forEach((entry, index) => {
+                    const listItem = document.createElement('li');
+                    listItem.innerHTML = `
+                        <strong>Media ${index + 1}:</strong><br>
+                        Filename: ${entry.filename}<br>
+                        Type: ${entry.type}<br>
+                        SHA-256: ${entry.hash}<br>
+                        Timestamp: ${entry.timestamp}
+                    `;
+                    explorerResults.appendChild(listItem);
+                });
             },
             // Add other methods for Blockchain Explorer functionality...
         };
